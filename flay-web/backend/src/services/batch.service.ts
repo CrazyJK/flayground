@@ -68,8 +68,16 @@ export function toggleOption(option: BatchOption): boolean {
   }
 }
 
-/** 배치 실행 (비동기) */
+/** 실행 중인 배치(중복 실행 가드) — 파일 이동이 비동기라 요청이 끼어들 수 있으므로 하나만 돌린다 */
+let runningBatch: BatchOperation | null = null;
+
+/** 배치 실행 (비동기). 이미 실행 중이면 로그만 남기고 무시한다. */
 export function startBatch(operation: BatchOperation): void {
+  if (runningBatch) {
+    void batchLogger(`이미 실행 중: ${runningBatch} (요청 ${operation} 무시)`);
+    return;
+  }
+  runningBatch = operation;
   // 비동기로 실행
   (async () => {
     try {
@@ -89,6 +97,8 @@ export function startBatch(operation: BatchOperation): void {
     } catch (err: any) {
       console.error(`[Batch] 오류: ${err.message}`);
       await batchLogger(`오류: ${err.message}`);
+    } finally {
+      runningBatch = null;
     }
   })();
 }
@@ -191,7 +201,7 @@ async function archiveBatch(): Promise<void> {
         const parentName = path.basename(path.dirname(filePath));
         if (parentName !== yyyyMM) {
           await batchLogger(`move ${filePath} to ${destDir}`);
-          moveFileToDirectory(filePath, destDir);
+          await moveFileToDirectory(filePath, destDir);
         }
       }
     }
@@ -224,7 +234,7 @@ async function assembleFlay(): Promise<void> {
         const parentDir = path.dirname(filePath);
         if (path.resolve(parentDir) !== path.resolve(delegatePath)) {
           await batchLogger(`move ${path.basename(filePath)} => ${delegatePath}`);
-          moveFileToDirectory(filePath, delegatePath);
+          await moveFileToDirectory(filePath, delegatePath);
         }
       }
     }
@@ -307,10 +317,10 @@ async function archiving(flay: Flay, reason: string): Promise<void> {
     for (const filePath of fileList) {
       if (key === 'cover' || key === 'subtitles') {
         await batchLogger(`will be move   ${filePath} to ${archiveDir}`);
-        moveFileToDirectory(filePath, archiveDir);
+        await moveFileToDirectory(filePath, archiveDir);
       } else if (key !== 'candidate') {
         await batchLogger(`will be delete ${filePath}`);
-        deleteFile(filePath);
+        await deleteFile(filePath);
       }
     }
   }

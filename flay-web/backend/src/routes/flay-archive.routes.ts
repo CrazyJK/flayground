@@ -89,9 +89,13 @@ router.get('/archives/:opus', (req, res) => {
  *       204:
  *         description: 성공
  */
-router.post('/archives/:opus/to-instance', (req, res) => {
-  archiveService.toInstance(req.params.opus);
-  res.sendStatus(204);
+router.post('/archives/:opus/to-instance', async (req, res, next) => {
+  try {
+    await archiveService.toInstance(req.params.opus);
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;

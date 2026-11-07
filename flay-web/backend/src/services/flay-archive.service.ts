@@ -70,9 +70,9 @@ export function findByField(field: string, value: string): Flay[] {
  * Archive Flay를 Instance로 이동한다.
  * Java FlayArchiveServiceImpl.toInstance() 대응
  */
-export function toInstance(opus: string): void {
+export async function toInstance(opus: string): Promise<void> {
   const flay = getArchiveFlay(opus);
-  moveCoverDirectory(flay);
+  await moveCoverDirectory(flay);
   // Archive 맵에서 제거
   const archiveList = getArchiveFlayList();
   const idx = archiveList.findIndex((f) => f.opus === opus);

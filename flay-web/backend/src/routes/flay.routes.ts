@@ -298,9 +298,13 @@ router.post('/flays/open-folder', (req, res) => {
  *       204:
  *         description: 성공
  */
-router.delete('/flays/files', (req, res) => {
-  flayService.deleteFileSvc(req.body);
-  res.sendStatus(204);
+router.delete('/flays/files', async (req, res, next) => {
+  try {
+    await flayService.deleteFileSvc(req.body);
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 });
 
 // ── 파라미터 라우트 (정적 라우트 뒤에 등록) ──
@@ -384,9 +388,13 @@ router.get('/flays/:opus/score', (req, res) => {
  *       204:
  *         description: 성공
  */
-router.patch('/flays/:opus/candidates/accept', (req, res) => {
-  flayService.acceptCandidates(req.params.opus);
-  res.sendStatus(204);
+router.patch('/flays/:opus/candidates/accept', async (req, res, next) => {
+  try {
+    await flayService.acceptCandidates(req.params.opus);
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 });
 
 /**
@@ -480,9 +488,13 @@ router.put('/flays/:opus', (req, res) => {
  *       204:
  *         description: 성공
  */
-router.delete('/flays/:opus/files', (req, res) => {
-  flayService.deleteFileOnFlay(req.params.opus, req.body);
-  res.sendStatus(204);
+router.delete('/flays/:opus/files', async (req, res, next) => {
+  try {
+    await flayService.deleteFileOnFlay(req.params.opus, req.body);
+    res.sendStatus(204);
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;

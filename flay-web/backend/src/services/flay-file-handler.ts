@@ -76,7 +76,7 @@ export function renameFlayActress(flay: Flay, actressList: string[]): void {
  * 파일을 지정된 디렉토리로 이동한다.
  * Java FlayFileHandler.moveFileToDirectory() 대응
  */
-export function moveFileToDirectory(filePath: string, destDir: string): void {
+export async function moveFileToDirectory(filePath: string, destDir: string): Promise<void> {
   if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, { recursive: true });
   }
@@ -102,9 +102,10 @@ export function moveFileToDirectory(filePath: string, destDir: string): void {
     fs.renameSync(filePath, destPath);
   } catch (err: any) {
     if (err.code === 'EXDEV') {
-      // 크로스 드라이브 이동은 복사 후 삭제
-      fs.copyFileSync(filePath, destPath);
-      fs.unlinkSync(filePath);
+      // 크로스 드라이브 이동은 복사 후 삭제. 동기 copyFileSync 는 수 GB 영상 한 편 동안 이벤트 루프를
+      // 통째로 잡아 서버 전체가 멈추므로 비동기(libuv 스레드풀)로 복사한다.
+      await fs.promises.copyFile(filePath, destPath);
+      await fs.promises.unlink(filePath);
     } else {
       throw err;
     }
@@ -115,7 +116,7 @@ export function moveFileToDirectory(filePath: string, destDir: string): void {
  * 파일을 삭제한다. recyclebin 설정에 따라 휴지통으로 이동할 수 있다.
  * Java FlayFileHandler.deleteFile() 대응
  */
-export function deleteFile(filePath: string): void {
+export async function deleteFile(filePath: string): Promise<void> {
   if (fs.statSync(filePath).isDirectory()) {
     throw new Error('디렉토리는 삭제할 수 없습니다: ' + filePath);
   }
@@ -123,7 +124,7 @@ export function deleteFile(filePath: string): void {
   if (config.flay.recyclebinUse) {
     const root = path.parse(filePath).root;
     const recycleBin = path.join(root, config.flay.recyclebin);
-    moveFileToDirectory(filePath, recycleBin);
+    await moveFileToDirectory(filePath, recycleBin);
     console.warn(`[FileHandler] 파일을 휴지통으로 이동: ${filePath} -> ${recycleBin}`);
   } else {
     fs.unlinkSync(filePath);
@@ -135,10 +136,10 @@ export function deleteFile(filePath: string): void {
  * Flay의 cover 파일들을 coverPath로 이동한다.
  * Java FlayFileHandler.moveCoverDirectory() 대응
  */
-export function moveCoverDirectory(flay: Flay): void {
+export async function moveCoverDirectory(flay: Flay): Promise<void> {
   for (const fileList of Object.values(flay.files)) {
     for (const filePath of fileList) {
-      moveFileToDirectory(filePath, config.flay.coverPath);
+      await moveFileToDirectory(filePath, config.flay.coverPath);
     }
   }
 }

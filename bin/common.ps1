@@ -103,6 +103,9 @@ function Start-Hidden {
     <#
       start $File $Arguments in $Dir with NO console window (CREATE_NO_WINDOW) and return the Process.
       -WindowStyle Hidden is not enough: when Windows Terminal is the default terminal it still opens an empty tab.
+      Caveat: the child inherits our std handles, so while a detached service runs, anything that
+      captures this script's stdout through a pipe ($out = powershell -File ..., or `| grep`) blocks
+      until the service exits. Redirect to a file (> out.txt) instead - monitor.ps1 does that.
     #>
     param([string]$File, [string]$Arguments, [string]$Dir)
     $psi = New-Object Diagnostics.ProcessStartInfo

@@ -141,19 +141,19 @@ export function findCandidates(): Flay[] {
  * 후보 파일을 수락한다.
  * Java FlayServiceImpl.acceptCandidates() 대응
  */
-export function acceptCandidates(opus: string): void {
+export async function acceptCandidates(opus: string): Promise<void> {
   const flay = getInstanceFlay(opus);
   const candiList = [...flay.files.candidate];
   const stagePath = config.flay.stagePaths[0];
 
   for (const file of candiList) {
     if (isVideoFile(file)) {
-      moveFileToDirectory(file, stagePath);
+      await moveFileToDirectory(file, stagePath);
       flay.files.movie.push(path.join(stagePath, path.basename(file)));
     } else if (isSubtitlesFile(file)) {
       // 비디오 파일이 있으면 그 위치로
       const baseFolder = flay.files.movie.length > 0 ? path.dirname(flay.files.movie[0]) : stagePath;
-      moveFileToDirectory(file, baseFolder);
+      await moveFileToDirectory(file, baseFolder);
       flay.files.subtitles.push(path.join(baseFolder, path.basename(file)));
     } else {
       throw new Error('알 수 없는 파일 확장자: ' + file);
@@ -221,8 +221,8 @@ export function openFolderSvc(folder: string): void {
 /**
  * 파일을 삭제한다.
  */
-export function deleteFileSvc(file: string): void {
-  deleteFile(file);
+export async function deleteFileSvc(file: string): Promise<void> {
+  await deleteFile(file);
   console.warn(`[FlayService] 파일 삭제: ${file}`);
 }
 
@@ -230,7 +230,7 @@ export function deleteFileSvc(file: string): void {
  * Flay에 속한 파일을 삭제한다.
  * Java FlayServiceImpl.deleteFileOnFlay() 대응
  */
-export function deleteFileOnFlay(opus: string, file: string): void {
+export async function deleteFileOnFlay(opus: string, file: string): Promise<void> {
   const flay = getInstanceFlay(opus);
 
   // Flay의 파일 목록에서 제거
@@ -242,7 +242,7 @@ export function deleteFileOnFlay(opus: string, file: string): void {
   }
 
   // 파일 삭제
-  deleteFile(file);
+  await deleteFile(file);
 
   // 파일명 정리
   renameFlay(flay);

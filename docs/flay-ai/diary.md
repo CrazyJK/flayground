@@ -37,7 +37,11 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 **회상 의도 감지는 코드(정규식)로 한다.** diary_llm(EXAONE 3.5)은 Ollama tool-calling 을
 지원하지 않아(`tools` 인자에 400) tool-call 라우팅이 불가능하다. `_looks_like_recall` 이
 검색/조회 명령·기억/시점 질문·명시적 회상어("보여줘/찾아줘/기억나?/언제였지?/회상")를 잡고,
-`_recall_search_query` 가 명령어를 떼어 주제만 검색어로 만든다. 자기지시어 "일기"도
+`_recall_search_query` 가 명령어를 떼어 주제만 검색어로 만든다. 표현 판정은 **짧은 한 줄(80자 이하)** 에만
+적용한다 — 여러 줄이거나 긴 글은 서술문(일기)이다('작년에 … 했던' 같은 표현이 일기 본문에 흔해서,
+길이를 보지 않으면 일기를 질문으로 오인해 저장하지 않는다). `?` 로 시작하면 길이와 무관하게 질문.
+회상 결과가 없으면 `not_found` 이벤트를 보내 화면이 '일기로 저장'(같은 글을 `as_entry: true` 로 재전송)을
+제안한다. 자기지시어 "일기"도
 주제에서 제거한다 — 본문에 '일기'가 든 무관한 글(짧을수록 BM25 높음)이 상위로 오염되는 것 방지.
 
 **조건 표현은 메타 필터로**(영상 RAG `_extract_meta` 와 같은 발상) — 주제 텍스트로 검색하면
@@ -221,7 +225,7 @@ user 행은 첫 행에 이어 붙이고(FTS·Qdrant 재색인, 나머지 행·�
 
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| POST | `/api/diary/chat` | (SSE) 일기 쓰기 + 회상 + 첨부. `{query, images?[], videos?[]}` (세션은 서버가 결정) |
+| POST | `/api/diary/chat` | (SSE) 일기 쓰기 + 회상 + 첨부. `{query, images?[], videos?[], as_entry?}` (세션은 서버가 결정, `as_entry` 면 회상 판정 없이 일기로 저장) |
 | POST | `/api/diary/sessions/{id}/react` | (SSE) 그 일기에 대한 LLM 맞장구 — 화면 '맞장구' 버튼. 요청 때만 생성, 비저장 |
 | GET | `/api/diary/sessions` | 세션 목록(히스토리) |
 | GET | `/api/diary/sessions/{id}` | 세션 transcript |
@@ -235,7 +239,7 @@ user 행은 첫 행에 이어 붙이고(FTS·Qdrant 재색인, 나머지 행·�
 | GET | `/static/diary-assets/{name}` | 임포트된 일기 이미지 서빙 |
 
 SSE 이벤트: 일기 저장 = `session` → `tags`(message_id, tags[]) → `done`(message 빈 문자열).
-회상 = `session`(열린 일기가 있을 때만) → `recall`(그때 일기 원문) → `token`* → `done`.
+회상 = `session`(열린 일기가 있을 때만) → `recall`(그때 일기 원문) → `token`* → `done`. 못 찾으면 `not_found` → `token`* → `done`.
 반응(`/react`) = `token`* → `done`(정리된 최종본).
 
 ## 프롬프트 커스터마이징 (말투·수위)

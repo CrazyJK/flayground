@@ -51,6 +51,9 @@ type Message = {
   recall?: RecallSession[];
   messageId?: number; // 서버 user 행 id(태그 편집용, tags 이벤트로 수신)
   tags?: TagItem[];
+  // 회상 질문으로 판정됐지만 못 찾은 경우(not_found 이벤트): 원문과 그 사용자 메시지 id.
+  // 질문은 저장되지 않으므로, 오판이면 '일기로 저장' 버튼으로 되살린다.
+  notFound?: { query: string; userId: string };
   status: "streaming" | "done" | "error" | "aborted";
   error?: string;
 };
@@ -380,11 +383,30 @@ const RecallCard = memo(function RecallCard({ s, last }: { s: RecallSession; las
   );
 });
 
-function AssistantBlock({ msg }: { msg: Message }) {
+function AssistantBlock({
+  msg,
+  onSaveEntry,
+}: {
+  msg: Message;
+  onSaveEntry?: (msg: Message) => void;
+}) {
   return (
     <div className="space-y-3">
       {/* AI 응답(동행 노트) */}
       {msg.text && <Companion>{msg.text}</Companion>}
+      {/* 회상 질문으로 봤지만 못 찾음 — 사실은 일기였다면 저장할 수 있게 */}
+      {msg.notFound && msg.status === "done" && onSaveEntry && (
+        <div className="flex items-center justify-end gap-3 font-sans text-xs text-muted-foreground">
+          <span>질문으로 봐서 저장하지 않았어요.</span>
+          <button
+            type="button"
+            onClick={() => onSaveEntry(msg)}
+            className="rounded-lg border border-border px-2.5 py-1 text-foreground hover:border-[var(--diary-accent)] hover:text-[var(--diary-accent)] active:scale-95"
+          >
+            일기로 저장
+          </button>
+        </div>
+      )}
       {msg.status === "streaming" && !msg.text && <TypingDots />}
       {/* 회상 타임라인 — 노트 아래에 '그때의 기억'을 펼침 */}
       {msg.recall && msg.recall.length > 0 && (
@@ -1202,7 +1224,7 @@ export default function DiaryPage() {
   }, [tagFilter, histLoaded, histLoading, loadHistory]);
 
   const send = useCallback(
-    async (query: string, images: string[] = [], videos: string[] = []) => {
+    async (query: string, images: string[] = [], videos: string[] = [], asEntry = false) => {
       if ((!query.trim() && images.length === 0 && videos.length === 0) || busy) return;
       const userMsg: Message = {
         id: `u-${Date.now()}`,
@@ -1229,6 +1251,7 @@ export default function DiaryPage() {
             query,
             images: images.length ? images : undefined,
             videos: videos.length ? videos : undefined,
+            as_entry: asEntry || undefined, // 회상 판정을 건너뛰고 일기로 저장
           }),
           signal: ac.signal,
         });
@@ -1277,6 +1300,10 @@ export default function DiaryPage() {
                   ...m,
                   recall: ev.sessions as RecallSession[],
                 }));
+                break;
+              case "not_found":
+                // 질문으로 판정됐지만 결과 없음 — 원문을 붙여 두고 '일기로 저장' 을 제안
+                updateAssistant(asstId, (m) => ({ ...m, notFound: { query, userId: userMsg.id } }));
                 break;
               case "token":
                 updateAssistant(asstId, (m) => ({ ...m, text: m.text + String(ev.text ?? "") }));
@@ -1335,6 +1362,16 @@ export default function DiaryPage() {
   );
 
   const abort = useCallback(() => abortRef.current?.abort(), []);
+  // '일기로 저장': 질문으로 오판된 글을 화면에서 걷어내고 같은 글을 일기로 다시 보낸다(as_entry)
+  const saveAsEntry = useCallback(
+    (msg: Message) => {
+      const nf = msg.notFound;
+      if (!nf) return;
+      setMessages((prev) => prev.filter((m) => m.id !== msg.id && m.id !== nf.userId));
+      void send(nf.query, [], [], true);
+    },
+    [send]
+  );
   // 대화 또는 불러온 이전 일기가 있으면 스레드(스크롤) 뷰
   const showThread = messages.length > 0 || history.length > 0;
 
@@ -1708,7 +1745,7 @@ export default function DiaryPage() {
                         </article>
                       ) : (
                         <div key={m.id}>
-                          <AssistantBlock msg={m} />
+                          <AssistantBlock msg={m} onSaveEntry={saveAsEntry} />
                         </div>
                       )
                     )}

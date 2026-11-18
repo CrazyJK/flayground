@@ -67,12 +67,24 @@ _PHOTO_COND_RE = re.compile(
 )
 
 
+# 회상 질문으로 볼 수 있는 최대 길이. 이보다 길거나 여러 줄이면 서술문(일기)이다 — 일기 본문에는
+# '작년에 … 했던', '그때 … 봤' 같은 표현이 자연스럽게 섞이므로 표현만으로 판정하면 일기를 질문으로
+# 오인해 저장하지 않게 된다.
+_RECALL_MAX_CHARS = 80
+
+
 def _looks_like_recall(text: str) -> bool:
-    return bool(_RECALL_RE.search(text or ""))
+    """회상 질문인지 판정. '?' 로 시작하면 명시적 질문, 여러 줄·긴 글은 일기, 그 외 짧은 한 줄만 표현으로 판정."""
+    t = (text or "").strip()
+    if t.startswith("?"):
+        return True
+    if "\n" in t or len(t) > _RECALL_MAX_CHARS:
+        return False
+    return bool(_RECALL_RE.search(t))
 
 
 def _recall_search_query(text: str) -> str:
-    s = _RECALL_STRIP.sub(" ", text or "")
+    s = _RECALL_STRIP.sub(" ", (text or "").strip().lstrip("?"))
     s = re.sub(r"\s+", " ", s).strip()
     return s or (text or "").strip()
 
@@ -519,8 +531,10 @@ async def route_diary_chat(
                     {"role": "user", "content": ctx},
                 ]
             else:
-                # 못 찾음 — 안내 후 종료
+                # 못 찾음 — 안내 후 종료. not_found 이벤트로 화면이 '일기로 저장' 을 제안할 수 있게 한다
+                # (질문으로 판정된 입력은 저장하지 않으므로, 오판이면 사용자가 되살릴 길이 필요).
                 msg = prompts.recall_not_found_message()
+                yield {"type": "not_found"}
                 yield {"type": "token", "text": msg}
                 yield {"type": "done", "message": msg}
                 return

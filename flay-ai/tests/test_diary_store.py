@@ -496,3 +496,15 @@ def test_transcript_returns_meta_and_messages(conn):
     assert tr["session"]["title"] == "제목"
     assert tr["session"]["weather"] == "sunny"
     assert tr["messages"][0]["content"] == "본문"
+
+
+def test_recall_intent_ignores_long_or_multiline_diary_text():
+    """긴 글·여러 줄은 회상 표현이 섞여 있어도 일기다. '?' 로 시작하면 길이와 무관하게 질문."""
+    from packages.diary.chat import _looks_like_recall, _recall_search_query
+
+    line = "오늘은 간만에 작년의 그 코박죽 했던 청바지를 입고 왔드라"
+    assert _looks_like_recall(line)  # 짧은 한 줄은 기존 규칙대로 표현으로 판정
+    assert not _looks_like_recall("간만에 올리네\n\n" + line)  # 여러 줄 = 일기
+    assert not _looks_like_recall(line + " 그래서 최근엔 구지 찾아 보려고 하지 않고 있었는데 " * 3)  # 긴 글
+    assert _looks_like_recall("? " + line * 5)  # 명시적 질문
+    assert _recall_search_query("?온천 갔던 날 찾아줘") == "온천 갔던 날"

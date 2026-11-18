@@ -65,6 +65,9 @@ class DiaryChatRequest(BaseModel):
         default_factory=list,
         description="업로드된 동영상 asset URL(/static/diary-assets/..), 최대 4개",
     )
+    as_entry: bool = Field(
+        False, description="True 면 회상 판정을 건너뛰고 무조건 일기로 저장(화면의 '일기로 저장' 버튼)"
+    )
 
 
 def _valid_video_urls(cfg: dict, videos: list[str]) -> list[str]:
@@ -137,7 +140,9 @@ async def diary_chat(req: DiaryChatRequest):
     # 회상 질문(첨부 없는 순수 회상 요청)은 '기억'이 아니라 '물음' — 색인은 물론
     # 저장도 하지 않고 일기(세션)를 새로 열지도 않는다(질문·답이 일기 뷰와 '최근 일기'
     # 목록을 오염). 조회는 휘발, 일기엔 기록만 남는다. 화면에는 스트림으로 평소처럼 보인다.
-    is_recall = not req.images and not req.videos and _looks_like_recall(text)
+    is_recall = (
+        not req.as_entry and not req.images and not req.videos and _looks_like_recall(text)
+    )
     history: list[dict] = []
     user_msg_id: int | None = None
     if is_recall:

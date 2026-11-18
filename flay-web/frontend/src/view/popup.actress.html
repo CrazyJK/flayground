@@ -10,24 +10,31 @@
   <body>
     <header class="sticky">
       <div>
-        <div class="header-side left studio-list"></div>
+        <div class="header-side left filter-list">
+          <div class="rank-summary" id="rankSummary" title="평균 랭크(0 제외) : instance 🆚 archive"></div>
+          <div class="rank-filter">
+            <input type="checkbox" id="rank-1" value="-1" /><label for="rank-1">-1</label>
+            <input type="checkbox" id="rank0" value="0" /><label for="rank0">0</label>
+            <input type="checkbox" id="rank1" value="1" /><label for="rank1">1</label>
+            <input type="checkbox" id="rank2" value="2" /><label for="rank2">2</label>
+            <input type="checkbox" id="rank3" value="3" /><label for="rank3">3</label>
+            <input type="checkbox" id="rank4" value="4" /><label for="rank4">4</label>
+            <input type="checkbox" id="rank5" value="5" /><label for="rank5">5</label>
+          </div>
+          <div class="like-filter">
+            <input type="checkbox" id="likeYes" value="liked" /><label for="likeYes" title="shot(video.likes) 이 있는 것만">Shot</label>
+            <input type="checkbox" id="likeNo" value="unliked" /><label for="likeNo" title="shot(video.likes) 이 없는 것만">No shot</label>
+          </div>
+          <div class="archive-filter">
+            <button id="toggleArchive" title="toggle Archive" data-archive="on"></button>
+          </div>
+        </div>
         <div class="header-center">
           <div class="actress-info">
             <input type="checkbox" id="favorite" />
             <label for="favorite" title="favorite"></label>
             <input type="text" id="name" placeholder="name..." />
             <input type="text" id="localName" placeholder="localName..." />
-            <select id="flayRank">
-              <option value="">Rank</option>
-              <option value="-1">Rank -1</option>
-              <option value="0">Rank 0</option>
-              <option value="1">Rank 1</option>
-              <option value="2">Rank 2</option>
-              <option value="3">Rank 3</option>
-              <option value="4">Rank 4</option>
-              <option value="5">Rank 5</option>
-            </select>
-            <button id="toggleArchive" title="toggle Archive" data-archive="on"></button>
             <button id="saveBtn">Save</button>
           </div>
           <div class="actress-info">

@@ -19,7 +19,7 @@ class PopupActress {
   actressName!: HTMLInputElement;
   localName!: HTMLInputElement;
   otherNames!: HTMLInputElement;
-  flayRank!: HTMLInputElement;
+  rankFilter!: HTMLElement;
   birth!: HTMLInputElement;
   age!: HTMLInputElement;
   body!: HTMLInputElement;
@@ -27,7 +27,7 @@ class PopupActress {
   debut!: HTMLInputElement;
   comment!: HTMLInputElement;
   saveBtn!: HTMLButtonElement;
-  studioList!: HTMLSelectElement;
+  likeFilter!: HTMLElement;
   tagList!: HTMLSelectElement;
   toggleArchive!: HTMLButtonElement;
 
@@ -58,7 +58,7 @@ class PopupActress {
     this.actressName = document.querySelector('#name')!;
     this.localName = document.querySelector('#localName')!;
     this.otherNames = document.querySelector('#otherNames')!;
-    this.flayRank = document.querySelector('#flayRank')!;
+    this.rankFilter = document.querySelector('.rank-filter')!;
     this.birth = document.querySelector('#birth')!;
     this.age = document.querySelector('#age')!;
     this.body = document.querySelector('#body')!;
@@ -66,7 +66,7 @@ class PopupActress {
     this.debut = document.querySelector('#debut')!;
     this.comment = document.querySelector('#comment')!;
     this.saveBtn = document.querySelector('#saveBtn')!;
-    this.studioList = document.querySelector('.studio-list')!;
+    this.likeFilter = document.querySelector('.like-filter')!;
     this.tagList = document.querySelector('.tag-list')!;
     this.toggleArchive = document.querySelector('#toggleArchive')!;
 
@@ -78,14 +78,13 @@ class PopupActress {
     document.title = this.name;
 
     // 조건에 맞는 카드 토글 이벤트
-    this.flayRank.addEventListener('change', () => {
-      this.#resetStudioList();
+    this.rankFilter.addEventListener('change', () => {
       this.#resetTagList();
       this.#toggleFlayCard();
-      this.#renderStudioList();
+      this.#renderLikeCount();
       this.#renderTagList();
     });
-    this.studioList.addEventListener('change', () => {
+    this.likeFilter.addEventListener('change', () => {
       this.#resetTagList();
       this.#toggleFlayCard();
       this.#renderTagList();
@@ -115,15 +114,13 @@ class PopupActress {
         comment: this.comment.value.trim(),
       });
     });
+    // archive 토글: 'off' = archive 카드 숨김. 상태만 바꾸고 다른 필터와 같은 흐름으로 다시 계산한다
+    // (태그 목록도 보이는 카드 기준으로 다시 그려 숨긴 archive 의 태그가 섞이지 않게)
     this.toggleArchive.addEventListener('click', () => {
-      const isArchive = this.toggleArchive.dataset.archive === 'on';
-      Array.from(document.querySelectorAll('flay-card'))
-        .filter((flayCard) => flayCard.hasAttribute('archive'))
-        .filter((flayCard) => (flayCard as HTMLElement).dataset.show === 'true')
-        .forEach((flayCard) => {
-          flayCard.classList.toggle('hide', isArchive);
-        });
-      this.toggleArchive.dataset.archive = isArchive ? 'off' : 'on';
+      this.toggleArchive.dataset.archive = this.toggleArchive.dataset.archive === 'on' ? 'off' : 'on';
+      this.#resetTagList();
+      this.#toggleFlayCard();
+      this.#renderTagList();
     });
 
     // sse 수신 이벤트
@@ -210,8 +207,8 @@ class PopupActress {
       .map((flay) => flay.opus);
 
     void this.#renderFlayCardList(opusList)
-      .then(() => this.#renderRankSelectOption())
-      .then(() => this.flayRank.dispatchEvent(new Event('change')))
+      .then(() => this.#renderRankCount())
+      .then(() => this.rankFilter.dispatchEvent(new Event('change')))
       .then(() => this.toggleArchive.dispatchEvent(new Event('click')));
   }
 
@@ -230,7 +227,13 @@ class PopupActress {
     return Array.from(this.flayCardMap.values());
   }
 
-  #renderRankSelectOption() {
+  /** 선택된 랭크 목록(복수 선택). 비어 있으면 전체 */
+  #selectedRanks(): number[] {
+    return Array.from(this.rankFilter.querySelectorAll('input:checked')).map((input) => parseInt((input as HTMLInputElement).value));
+  }
+
+  /** 랭크 체크박스 라벨에 건수(instance 🆚 archive), 요약 줄에 평균 랭크와 합계를 표시한다 */
+  #renderRankCount() {
     const flayCountMap = new Map();
     for (let i = -1; i <= 5; i++) {
       flayCountMap.set(i, { instance: 0, archive: 0 });
@@ -254,41 +257,36 @@ class PopupActress {
       }
     });
     flayCountMap.forEach((countObj, rank) => {
-      document.querySelector(`#flayRank option[value="${rank}"]`)!.innerHTML = `Rank ${rank} : ${countObj.instance} ${countObj.archive > 0 ? ' 🆚 ' + countObj.archive : ''}`; // 🔺🔻⛔⭕🚫🆚
+      this.rankFilter.querySelector(`label[for="rank${rank}"]`)!.textContent = `${rank} : ${countObj.instance}${countObj.archive > 0 ? ' 🆚 ' + countObj.archive : ''}`; // 🔺🔻⛔⭕🚫🆚
     });
     const avg = count > 0 ? (sum / count).toFixed(1) : 0;
-    document.querySelector(`#flayRank option:first-child`)!.innerHTML = `Rank ${avg} : ${instanceTotal} 🆚 ${archiveTotal}`;
-  }
-
-  #resetStudioList() {
-    document.querySelector('.studio-list')!.textContent = null;
+    document.querySelector('#rankSummary')!.textContent = `Rank ${avg} : ${instanceTotal} 🆚 ${archiveTotal}`;
   }
 
   #resetTagList() {
     document.querySelector('.tag-list')!.textContent = null;
   }
 
-  #renderStudioList() {
-    const list: string[] = [];
+  /**
+   * 좋아요 필터 라벨에 건수를 표시한다. 선택된 rank 들에 해당하는 카드 기준(좋아요 선택 자체와는 무관).
+   */
+  #renderLikeCount() {
+    const ranks = this.#selectedRanks();
+    let [liked, unliked] = [0, 0];
     this.#flayCardList().forEach((flayCard) => {
-      if (flayCard.style.display === 'none') {
-        return;
-      }
-      const studio = flayCard.flay.studio;
-      if (!list.includes(studio)) {
-        list.push(studio);
-      }
+      if (ranks.length > 0 && !ranks.includes(flayCard.flay.video.rank)) return;
+      if (flayCard.flay.video.likes?.length > 0) liked++;
+      else unliked++;
     });
-    document.querySelector('.studio-list')!.innerHTML = list
-      .sort((n1, n2) => n1.localeCompare(n2))
-      .map((name) => `<input type="checkbox" id="${name}" value="${name}"><label for="${name}">${name}</label>`)
-      .join('');
+    this.likeFilter.querySelector('label[for="likeYes"]')!.textContent = `Shot ${liked}`;
+    this.likeFilter.querySelector('label[for="likeNo"]')!.textContent = `No shot ${unliked}`;
   }
 
   #renderTagList() {
     const tagMap = new Map();
     this.#flayCardList().forEach((flayCard) => {
-      if (flayCard.style.display === 'none') {
+      // 필터로 숨긴 카드(display none)와 archive 토글로 숨긴 카드(.hide) 모두 제외
+      if (flayCard.style.display === 'none' || flayCard.classList.contains('hide')) {
         return;
       }
       flayCard.flay.video.tags.forEach((tag) => {
@@ -304,32 +302,34 @@ class PopupActress {
   }
 
   /**
-   * 선택된 rank, 선택된 studio, 선택된 tag로 flayCard toggle 이벤트
+   * 선택된 rank, 좋아요 유무, 선택된 tag로 flayCard toggle 이벤트
    */
   #toggleFlayCard() {
-    const rank = parseInt(this.flayRank.value);
-    const studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input) => (input as HTMLInputElement).value);
+    const ranks = this.#selectedRanks();
+    // 좋아요 필터: 하나만 선택됐을 때만 거른다(둘 다 선택·둘 다 해제 = 전체)
+    const likeSel = Array.from(this.likeFilter.querySelectorAll('input:checked')).map((input) => (input as HTMLInputElement).value);
     const tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input) => parseInt((input as HTMLInputElement).value));
 
     // console.log(`
-    //   rank: ${rank}
-    //   studios: ${studios.join(', ')}
+    //   ranks: ${ranks.join(', ')}
+    //   likes: ${likeSel.join(', ')}
     //   tags: ${tags.join(', ')}
     // `);
 
+    const archiveHidden = this.toggleArchive.dataset.archive === 'off';
     let archiveCount = 0;
     this.#flayCardList().forEach((flayCard) => {
       let show = true;
       // 조건에 맞쳐 숨길 카드 선택
       // rank로 filter
-      if (!isNaN(rank) && rank !== flayCard.flay.video.rank) {
-        // 다른 rank면 숨기기
+      if (ranks.length > 0 && !ranks.includes(flayCard.flay.video.rank)) {
+        // 선택한 rank 가 아니면 숨기기
         show = false;
       }
-      // 선택된 studio로 filter
-      if (studios.length > 0) {
-        //
-        if (!studios.includes(flayCard.flay.studio)) {
+      // 좋아요 유무로 filter (video.likes.length > 0 인 것 / 아닌 것)
+      if (likeSel.length === 1) {
+        const liked = flayCard.flay.video.likes?.length > 0;
+        if ((likeSel[0] === 'liked') !== liked) {
           show = false;
         }
       }
@@ -350,6 +350,7 @@ class PopupActress {
 
       flayCard.dataset.show = String(show);
       flayCard.style.display = show ? 'block' : 'none';
+      flayCard.classList.toggle('hide', archiveHidden && flayCard.hasAttribute('archive'));
       if (show) {
         flayCard.hasAttribute('archive') && archiveCount++;
       }

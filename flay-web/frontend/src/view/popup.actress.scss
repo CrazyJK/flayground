@@ -23,7 +23,40 @@ body {
         height: 100%;
         overflow: auto;
 
-        &.studio-list,
+        // 왼쪽: 랭크 요약 + 랭크(복수 선택) + 좋아요 필터를 세로로 쌓는다
+        &.filter-list {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 4px;
+          border: 1px dashed chocolate;
+          padding: 2px;
+
+          > div {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .rank-summary {
+            font-size: var(--size-small);
+            color: var(--color-text-secondary);
+          }
+
+          label {
+            font-size: var(--size-small);
+            line-height: 20px;
+            border: 0 !important;
+          }
+
+          // archive 토글은 버튼 테두리를 유지(누를 수 있음이 보이게), 크기만 라벨과 맞춘다
+          button {
+            font-size: var(--size-small);
+            line-height: 20px;
+          }
+        }
+
         &.tag-list {
           display: flex;
           flex-wrap: wrap;
@@ -113,9 +146,6 @@ body {
   flex: 1 1 auto;
   padding: 0.25rem;
   font-size: var(--size-normal);
-}
-#flayRank {
-  flex: 0 1 auto;
 }
 #totalCount {
   flex: 0 0 5rem;
